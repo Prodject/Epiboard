@@ -75,6 +75,10 @@
     "apiKey": "{name} API Key",
     "custom_message": "Benutzerdefinierte Header-Nachricht",
     "whatsnew": "Bleiben Sie auf dem Laufenden über die neuesten Updates.",
+    "donate": {
+      "title": "Gefällt dir meine Arbeit?",
+      "desc": "Klicken Sie hier, um mir ein Bier zu kaufen <3"
+    },
     "dark": {
       "title": "Dunkler modus",
       "desc": "Alles wird dunkel",
@@ -114,8 +118,7 @@
       "custom_desactived": "Deaktiviert wenn Google Trends Aktiviert ist"
     },
     "error": {
-        "error": "Ungültiges Format, z.B. #607D8B",
-        "color": "Ungültiges Format, z.B. #607D8B"
+      "color": "Ungültiges Format, z.B. #607D8B"
     }
   }
 }

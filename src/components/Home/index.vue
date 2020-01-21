@@ -9,13 +9,15 @@
           <v-icon>add</v-icon>
           <v-icon>close</v-icon>
         </v-btn>
-        <v-btn
-          v-for="card in availableCards"
-          :key="card"
-          :title="getTranslation(`${card}.description`)"
-          color="green" dark small @click="addCard(card)">
-          {{ getTranslation(`${card}.title`) || card }}
-        </v-btn>
+        <template v-if="fab">
+          <v-btn
+            v-for="card in availableCards"
+            :key="card"
+            :title="getTranslation(`${card}.description`)"
+            color="green" dark small @click="addCard(card)">
+            {{ getTranslation(`${card}.title`) || card }}
+          </v-btn>
+        </template>
       </v-speed-dial>
     </transition>
     <transition-group
@@ -23,13 +25,16 @@
       id="card-container"
       :class="{ 'has-toolbar': $store.state.settings.header.design === 'toolbar' }"
       name="fade" tag="div">
-      <card v-resize v-for="card in cards" :key="card" :id="card" @deleted="delCard(card)"/>
+      <card
+        v-resize
+        v-for="card in cards"
+        :key="card.name" :name="card.id" :id="card.id" @deleted="delCard(card.id)"/>
     </transition-group>
     <div v-else id="card-container" class="placeholder">
       <div
         v-for="i in 5"
         :key="i"
-        :style="{ height: `${[, 350, 250, 200, 300, 200][i]}px` }" class="placeholder-item"/>
+        :style="{ height: `${[, 350, 250, 200, 300, 200][i]}px` }" class="card placeholder-item"/>
     </div>
     <v-layout
       v-if="!$options.isPreRender && !cards.length"

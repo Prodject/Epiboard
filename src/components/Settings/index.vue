@@ -9,7 +9,7 @@
         <h4 v-t="'settings.choose.24h'" class="subheading"/>
         <v-switch
           v-model="settings.hour24"
-          :label="$tc('settings.onOff', settings.hour24)" class="mt-0" hide-details/>
+          :label="$tc('settings.onOff', settings.hour24)" class="mt-0 mb-2" hide-details/>
         <h4 v-t="'settings.header'" class="headline"/>
         <h4 v-t="'settings.choose.design'" class="subheading"/>
         <v-radio-group v-model="settings.header.design" :mandatory="false">
@@ -153,14 +153,6 @@
               format="24h" @change="$refs.menu_to.save(settings.dark.to)"/>
           </v-menu>
         </v-layout>
-        <h4 v-t="'settings.auth.title'" class="headline"/>
-        <h4 v-t="'settings.auth.desc'" class="subheading"/>
-        <v-layout align-center class="py-3">
-          <v-btn
-            v-t="{ path: 'auth.disconnect_from', args: { service: 'Google' } }"
-            :disabled="!$gauth_isConnected"
-            color="blue" class="white--text ma-0" @click="$gauth_revoke()"/>
-        </v-layout>
         <h4 class="headline">Google Analytics</h4>
         <h4 v-t="'settings.analytics_desc'" class="subheading"/>
         <v-switch
@@ -173,8 +165,8 @@
         <v-switch
           :label="$tc('settings.onOff', settings.whatsnew)"
           v-model="settings.whatsnew" hide-details/>
-        <v-layout align-center>
-          <v-btn v-t="'settings.save'" flat small @click="save"/>
+        <v-layout class="pt-3" align-center>
+          <v-btn v-t="'settings.save'" color="primary" small @click="save"/>
           <v-btn v-t="'settings.reset'" flat small @click="reset"/>
           <v-flex>
             <p class="text-xs-right">

@@ -1,17 +1,13 @@
 import Toast from '@/components/Toast';
-import { RecycleList } from 'vue-virtual-scroller';
 import utils from '@/mixins/utils';
 
 // @vue/component
 export default {
   name: 'Downloads',
-  components: {
-    RecycleList,
-  },
   directives: {
     drag: {
       bind(el, { value }) {
-        if (!value) return;
+        if (!value || browserName !== 'chrome') return;
         el.addEventListener('dragstart', () => {
           browser.downloads.drag(parseInt(el.id, 10));
         });
@@ -35,13 +31,12 @@ export default {
       title: this.$t('Downloads.clear'),
       func: () => this.removeAll(),
     }]);
-    Promise.all([this.getDownloads()])
+    this.getDownloads()
       .then(() => {
         this.listenChange();
         this.listenCreate();
         this.listenErased();
       })
-      .then(() => this.$emit('init'))
       .catch(err => this.$emit('init', err));
   },
   methods: {

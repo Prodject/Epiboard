@@ -1,26 +1,24 @@
 import Vue from 'vue';
-import Vuex from 'vuex';
-import 'material-design-icons/iconfont/material-icons.css';
+import 'material-design-icons-iconfont/dist/material-design-icons.css';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import VueAnalytics from 'vue-analytics';
+import Vuetify from 'vuetify/lib';
 import App from '@/App';
 import { i18n } from '@/i18n';
 import router from '@/router';
 import store from '@/store';
-import Vuetify from 'vuetify/lib';
 import 'vuetify/src/stylus/app.styl';
 import '@/style.scss';
 
 Vue.config.productionTip = false;
 
 // TODO: Firefox doesnt allow to load external script
-if (browserName === 'chrome') {
+if (browserName === 'chrome' && !window.__PRERENDER_INJECTED) {
   Vue.use(VueAnalytics, {
     id: 'UA-78514802-2',
     // In Chrome extension, must close checking protocol.
     set: [{ field: 'checkProtocolTask', value: null }],
-    checkDuplicate: true,
     router,
     debug: {
       sendHitTask: localStorage.getItem('analytics') !== 'false',
@@ -28,8 +26,8 @@ if (browserName === 'chrome') {
   });
 }
 
-Vue.use(Vuex);
 Vue.use(Vuetify, {
+  iconfont: 'md',
   theme: {
     primary: '#607D8B',
     secondary: '#546E7A',

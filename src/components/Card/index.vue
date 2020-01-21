@@ -1,6 +1,6 @@
 <template>
-  <div :style="{ width: `${size}px` }" class="card">
-    <v-card :width="size" hover raised>
+  <div class="card">
+    <v-card :width="((this.$options.manifest.size || 1) * 430) - 30" hover>
       <v-toolbar
         :color="theme ? 'elevation-0' : 'primary'"
         :absolute="!!theme"
@@ -16,7 +16,8 @@
         </v-layout>
         <v-spacer/>
         <v-progress-circular
-          v-show="!loaded"
+          v-if="$options.manifest.externalsRequests"
+          v-show="!loaded && !showSettings"
           :title="$t('card.loading', { id: $vnode.key })"
           :style="{ color: actionsColor }"
           :size="25" :width="2" indeterminate/>
@@ -39,13 +40,13 @@
             </v-list-tile>
             <v-divider v-if="actions.length"/>
             <v-list-tile
-              v-if="$options.manifest.more" @click="$utils.gotTo($options.manifest.more)">
+              v-if="$options.manifest.more" @click="gotTo($options.manifest.more)">
               <v-list-tile-title v-t="'card.more'"/>
             </v-list-tile>
             <v-list-tile v-if="$options.settings" @click.stop="showSettings=true">
               <v-list-tile-title v-t="'settings.title'"/>
             </v-list-tile>
-            <v-list-tile v-if="debug" @click="reload()">
+            <v-list-tile v-if="$store.state.settings.debug" @click="reload()">
               <v-list-tile-title v-t="'card.reload'"/>
             </v-list-tile>
             <v-list-tile @click="remove()">
@@ -72,7 +73,7 @@
       </v-toolbar>
       <keep-alive>
         <component
-          v-init="$vnode.key"
+          v-init="{ id: name, key: $vnode.key }"
           v-show="!showSettings"
           ref="card"
           :actions.sync="actions"

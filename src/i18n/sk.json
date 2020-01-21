@@ -75,6 +75,10 @@
     "apiKey": "{name} kľúč API",
     "custom_message": "Vlastná správa hlavičky",
     "whatsnew": "Zostante pozorný pre najnovšie aktualizácie",
+    "donate": {
+      "title": "Páči sa vám moja práca?",
+      "desc": "Kliknite sem a kúpte mi pivo <3"
+    },
     "dark": {
       "title": "Tmavý režim",
       "desc": "Všetko sa stane tmavým", 
@@ -114,7 +118,7 @@
       "custom_desactived": "Deaktivovaný ak sú Google trendy aktivované"
     },
     "error": {
-      "error": "Nesprávny hex, napr. #607D8B"
+      "color": "Nesprávny hex, napr. #607D8B"
     }
   }
 }

@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const PrerenderSPAPlugin = require('prerender-spa-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const zipafolder = require('zip-a-folder');
 const { log, error } = require('@vue/cli-shared-utils');
 const { DefinePlugin, ContextReplacementPlugin } = require('webpack');
@@ -108,8 +109,8 @@ const generateLangsFile = (langs) => {
     fs.writeFileSync(
       `./src/langs/${langsNames[i]}.js`,
       `// This file is auto generated, do not modify it manually.
-// To modify translations, files are in the i18n folder
-export default ${JSON.stringify(langs[langsNames[i]])}\n`,
+// To modify it look in the i18n folder
+export default ${JSON.stringify(langs[langsNames[i]], null, 0)}\n`,
     );
   }
 };
@@ -150,6 +151,7 @@ module.exports = {
         options.chunkFilename = options.chunkFilename.replace('[contenthash:8]', id);
       }
       /* eslint-enable no-param-reassign */
+      config.optimization.minimizer.push(new OptimizeCSSAssetsPlugin({}));
     }
     // Copy proper manifest to dist
     config.plugins.push(new CopyWebpackPlugin([{
@@ -188,6 +190,7 @@ module.exports = {
           // eslint-disable-next-line
           route.html = route.html
             .replace(/<script (.*?)>/g, '<script $1 defer>')
+            .replace(/<style(.*?)id="vuetify-theme-stylesheet"(.*?)>(.*?)<\/style>/gs, '')
             .replace('id="app"', 'id="app" data-server-rendered="true"');
           if (browserName !== 'chrome') {
             // eslint-disable-next-line
@@ -195,13 +198,6 @@ module.exports = {
               .replace(/<script(.*?)src="https:\/\/www.google-analytics.com\/analytics.js"(.*?)><\/script>/g, '');
           }
           return route;
-        },
-        minify: {
-          collapseBooleanAttributes: true,
-          collapseWhitespace: true,
-          decodeEntities: true,
-          keepClosingSlash: true,
-          sortAttributes: true,
         },
         renderer: new PrerenderSPAPlugin.PuppeteerRenderer({
           inject: {},

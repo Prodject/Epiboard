@@ -32,8 +32,7 @@ export default {
     },
   },
   created() {
-    Promise.all([this.getTopSites()])
-      .then(() => this.$emit('init'))
+    this.getTopSites()
       .catch(err => this.$emit('init', err));
   },
   methods: {
@@ -41,10 +40,10 @@ export default {
       return browser.topSites.get().then((topSites) => {
         this.topSites = topSites.slice(0, this.settings.maxSites)
           .map((f) => {
-            const icon = this.settings.grid
+            f.icon = this.settings.grid
               ? this.getFavicon(new URL(f.url).hostname, this.size)
               : this.getFavicon(f.url);
-            return { ...f, icon };
+            return f;
           });
       });
     },

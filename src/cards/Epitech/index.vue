@@ -13,7 +13,7 @@
       :light="$store.state.settings.theme.light"
       slider-color="foreground" color="primary" grow>
       <v-tab
-        v-for="tab in ['Infos', 'Upcoming', 'Occuped Rooms']"
+        v-for="tab in ['Infos', 'Upcoming', 'Occupied Rooms']"
         :key="tab">{{ tab }}</v-tab>
       <v-tabs-items>
         <v-tab-item lazy>
@@ -39,7 +39,7 @@
               <sup>{{ ordinal }}</sup> year, Promo {{ user.promo }}
             </p>
           </v-card-text>
-          <v-card-text v-if="projects.length" class="projects scroller">
+          <v-card-text v-if="projects.length" class="projects">
             <div v-for="project in projects" :key="project.title" class="project">
               <a :href="project.link" target="_blank">
                 <h4>{{ project.title }}</h4>
@@ -63,10 +63,9 @@
             <v-icon v-if="settings.hideInfo" x-large>work</v-icon>
             <h2 class="subheading">No on going projects, well done !</h2>
           </v-card-text>
-          <timeline :user="user"/>
         </v-tab-item>
         <v-tab-item lazy>
-          <v-list v-if="upcoming.length" class="scroller" three-line dense>
+          <v-list v-if="upcoming.length" class="upcoming" three-line dense>
             <v-list-tile v-for="activity of upcoming" :key="activity.acti_title">
               <v-list-tile-content>
                 <v-list-tile-title>{{ activity.room.code | filename }}</v-list-tile-title>

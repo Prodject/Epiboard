@@ -1,7 +1,8 @@
 import ResizeObserver from 'resize-observer-polyfill';
-import Card from '@/components/Card';
-import Cards from '@/cards';
 import Muuri from 'muuri';
+import Card from '@/components/Card';
+import Toast from '@/components/Toast';
+import Cards from '@/cards';
 
 // @vue/component
 export default {
@@ -30,23 +31,31 @@ export default {
   computed: {
     cards() {
       const { cards } = this.$store.state;
-      return [...new Set(cards)].filter(f => Cards[f]);
+      return cards.map((f) => {
+        const idx = f.indexOf('_');
+        if (idx > 0) return { name: f.substring(0, idx), id: f };
+        return { name: f, id: f };
+      }).filter(f => Cards[f.name]);
     },
     availableCards() {
-      let keys = this.cards;
+      let keys = this.cards.map(f => f.name);
       if (!this.$store.state.settings.debug) {
         keys = keys.concat(['Changelog']);
       }
-      return Object.keys(Cards).filter(f => keys.indexOf(f) === -1);
+      return Object.keys(Cards).filter(f => keys.indexOf(f) === -1
+        || (Cards[f].manifest && Cards[f].manifest.allowMultiple));
     },
   },
   created() {
-    this.checkVersion();
+    if (!this.$options.isPreRender) {
+      this.checkVersion();
+    }
     this.$options.ro = new ResizeObserver(this.onResize);
   },
   mounted() {
     if (!this.$options.isPreRender) {
       this.initGrid();
+      this.showDonateToast();
     } else {
       document.dispatchEvent(new Event('render-event'));
     }
@@ -56,11 +65,10 @@ export default {
   },
   methods: {
     getTranslation(path) {
-      const tmp = this.$t(path);
-      if (tmp === path) {
-        return null;
+      if (this.$te(path)) {
+        return this.$t(path);
       }
-      return tmp;
+      return null;
     },
     onResize(entries) {
       if (!this.$options.grid) return;
@@ -92,8 +100,12 @@ export default {
         },
       });
     },
-    addCard(key) {
-      this.$store.commit(key === 'Changelog' ? 'ADD_CARD_FIRST' : 'ADD_CARD', key);
+    addCard(name) {
+      let key = name;
+      if (this.cards.find(f => f.name === name)) {
+        key += `_${Math.floor(Math.random() * Math.floor(99))}`;
+      }
+      this.$store.commit(name === 'Changelog' ? 'ADD_CARD_FIRST' : 'ADD_CARD', key);
       this.$nextTick(() => {
         const elem = document.getElementById(key);
         if (key === 'Changelog') this.$options.grid.add(elem, { index: 0 });
@@ -106,11 +118,14 @@ export default {
     checkVersion() {
       const lastVersion = this.$store.state.cache.version;
       const { version } = browser.runtime.getManifest();
-      if (lastVersion && lastVersion !== version && this.cards.indexOf('Changelog') === -1
-        && this.$store.state.settings.whatsnew) {
+      if (this.$store.state.settings.whatsnew && lastVersion
+        && lastVersion !== version && !this.cards.find(f => f.name === 'Changelog')) {
         this.$store.commit('ADD_CARD_FIRST', 'Changelog');
       }
       if (lastVersion !== version) {
+        if (this.$store.state.settings.donate < 0) {
+          this.$store.commit('RESET_DONATE');
+        }
         this.$store.commit('SET_VERSION', version);
       }
     },
@@ -118,19 +133,44 @@ export default {
       this.$options.grid = new Muuri('#card-container', {
         items: '.card',
         dragEnabled: true,
-        dragPlaceholder: true,
-        layout: { fillGaps: true },
+        dragPlaceholder: {
+          enabled: true,
+        },
         dragStartPredicate: { handle: '.head-drag' },
-        dragSortInterval: 0,
+        dragSortHeuristics: {
+          sortInterval: 0,
+        },
         layoutOnInit: false,
         sortData: {
-          index: (item, el) => this.cards.indexOf(el.id),
+          index: (item, el) => this.cards.findIndex(f => f.id === el.id),
         },
-      });
+      }).on('move', this.onDrag);
       if (this.cards.length) {
         this.$options.grid.sort('index', { layout: 'instant' });
+      } else {
+        this.$options.grid.layout(true);
       }
-      this.$options.grid.on('dragEnd', this.onDrag);
+    },
+    showDonateToast() {
+      const { donate } = this.$store.state.settings;
+      if (donate > 0) {
+        this.$store.commit('DECREASE_DONATE');
+      } else if (donate === 0) {
+        Toast.show({
+          title: this.$t('settings.donate.title'),
+          desc: this.$t('settings.donate.desc'),
+          icon: 'card_giftcard',
+          color: '#27ae60',
+          timeout: 0,
+          callback: () => {
+            this.$store.commit('DECREASE_DONATE');
+            window.location.href = 'https://paypal.me/ARouillard';
+          },
+          dismissCb: () => {
+            this.$store.commit('DECREASE_DONATE');
+          },
+        });
+      }
     },
   },
 };

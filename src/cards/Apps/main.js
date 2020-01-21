@@ -27,8 +27,7 @@ export default {
     },
   },
   created() {
-    Promise.all([this.getAll()])
-      .then(() => this.$emit('init'))
+    this.getAll()
       .catch(err => this.$emit('init', err));
   },
   methods: {

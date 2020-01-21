@@ -1,0 +1,8 @@
+{
+  "theme": {
+    "title": "#ffffff",
+    "actions": "auto"
+  },
+  "more": "https://translate.google.com/",
+  "origins": ["https://www.google.com/async/translate"]
+}

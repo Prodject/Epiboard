@@ -1,6 +1,8 @@
 {
   "cacheValidity": 300,
+  "externalsRequests": true,
   "settings": {
-    "feeds": ["https://news.google.com/news/rss/"]
+    "feeds": ["https://news.google.com/news/rss/"],
+    "apiKey": ""
   }
 }
